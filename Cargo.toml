@@ -1,0 +1,12 @@
+[package]
+name = "rustanoid"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+allegro = "0.0.48"
+allegro_font = "0.0.48"
+allegro_ttf = "0.0.48"
+allegro_primitives = "0.0.48"

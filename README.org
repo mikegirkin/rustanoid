@@ -1,0 +1,9 @@
+* TODOs
+** DONE Game over screen
+CLOSED: [2025-09-09 Tue 22:09]
+** DONE Count player lives
+CLOSED: [2025-09-09 Tue 22:09]
+** DONE Ball hitting top corners of the paddle goes through
+CLOSED: [2025-09-09 Tue 22:09]
+** TODO Breakable bricks
+** TODO Display lives remaining
