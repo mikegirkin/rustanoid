@@ -1,3 +1,6 @@
+use std::f32::consts::PI;
+use std::fmt;
+
 #[derive(Debug, Clone)]
 pub struct Rectangle {
     pub x1: f32,
@@ -31,7 +34,6 @@ impl Rectangle {
 
     pub fn with_left_at(&self, new_left: f32) -> Rectangle {
         let old_left = self.left();
-        let diff = new_left - old_left;
         Rectangle {
             x1: new_left,
             y1: self.y1,
@@ -42,7 +44,6 @@ impl Rectangle {
 
     pub fn with_right_at(&self, new_right: f32) -> Rectangle {
         let old_right = self.right();
-        let diff = new_right - old_right;
         Rectangle {
             x1: new_right - f32::abs(self.x1 - self.x2),
             y1: self.y1,
@@ -233,8 +234,35 @@ impl FVector2d {
     pub fn is_zero(&self) -> bool {
         f32::abs(self.x) < f32::EPSILON && f32::abs(self.y) < f32::EPSILON
     }
+
+    pub fn as_polar(&self) -> PolarVector {
+        PolarVector {
+            magnitude: self.length(),
+            direction: self.y.atan2(self.x),
+        }
+    }
 }
 
+#[derive(Clone)]
+pub struct PolarVector {
+    pub magnitude: f32,
+    pub direction: f32
+}
+
+impl PolarVector {
+    pub fn as_vector_2d(&self) -> FVector2d {
+        FVector2d::new(
+            self.magnitude * f32::sin(self.direction),
+            self.magnitude * f32::cos(self.direction)
+        )
+    }
+}
+
+impl fmt::Debug for PolarVector {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "PolarVector(mag: {:.2}, dir: {:.2} [{:.0} deg])", self.magnitude, self.direction, self.direction * 180.0 / PI)
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct Circle {

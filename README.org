@@ -5,5 +5,10 @@ CLOSED: [2025-09-09 Tue 22:09]
 CLOSED: [2025-09-09 Tue 22:09]
 ** DONE Ball hitting top corners of the paddle goes through
 CLOSED: [2025-09-09 Tue 22:09]
-** TODO Breakable bricks
+** DONE Breakable bricks
+CLOSED: [2025-12-01 Mon 21:19]
+** DONE Display debug info: first ball vector
+CLOSED: [2025-12-01 Mon 21:48]
+** TODO Bricks can be unbreakable
+** TODO Finish game when all breakable bricks removed
 ** TODO Display lives remaining

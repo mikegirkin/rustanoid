@@ -203,7 +203,11 @@ impl GameState {
             let collistion_opt = paddle_collision.or(brick_collision).or(wall_collision);
             match collistion_opt {
                 Some((collision, other_object_vector)) => {
-                    let new_movement_vector = new_vector_after_circle_collision(&self.balls[i].movement_vector, &collision, &other_object_vector);
+                    let new_movement_vector = new_vector_after_circle_collision(
+                        &self.balls[i].movement_vector,
+                        &collision,
+                        &other_object_vector
+                    );
                     self.balls[i].movement_vector = new_movement_vector;
                 },
                 None => {},

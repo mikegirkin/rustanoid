@@ -65,6 +65,7 @@ pub struct UI<'a> {
     ttf_addon: TtfAddon,
     primitives_addon: PrimitivesAddon,
     pub font: Font,
+    pub debug_font: Font,
     pub display: Display
 }
 
@@ -74,10 +75,11 @@ impl<'a> UI<'a> {
         let ttf_addon = TtfAddon::init(&font_addon).unwrap();
         let primitives_addon = PrimitivesAddon::init(&core).unwrap();
         let font = ttf_addon.load_ttf_font("data/Roboto-VariableFont_wdth,wght.ttf", (ui_config.world_to_gfx_scale_factor * -32.0) as i32, Flag::zero()).unwrap();
+        let debug_font = ttf_addon.load_ttf_font("data/Roboto-VariableFont_wdth,wght.ttf", (ui_config.world_to_gfx_scale_factor * 8.0) as i32, Flag::zero()).unwrap();
         core.set_new_display_flags(WINDOWED | OPENGL);
         core.set_new_display_option(DisplayOption::Vsync, 0, DisplayOptionImportance::Require);
         let display = Display::new(&core, ui_config.screen.w, ui_config.screen.h).unwrap();
-        UI {ui_config, core, font_addon, ttf_addon, primitives_addon, font, display }
+        UI {ui_config, core, font_addon, ttf_addon, primitives_addon, font, debug_font, display }
     }
 
     pub fn render(&self, game_state: &GameState) -> () {
@@ -87,6 +89,7 @@ impl<'a> UI<'a> {
         self.render_bricks(&game_state.bricks);
         self.render_balls(&game_state.balls);
         self.render_game_over(&game_state);
+        self.render_debug(&game_state);
         self.core.flip_display();
     }
 
@@ -146,6 +149,11 @@ impl<'a> UI<'a> {
            let color = Color::from_rgb(255, 255, 255);
            self.primitives_addon.draw_filled_circle(center_point.x, center_point.y, radius, color);
        }
+    }
+
+    fn render_debug(&self, game_state: &GameState) {
+        let text = format!("{:?}", game_state.balls[0].movement_vector.as_polar());
+        self.core.draw_text(&self.debug_font, Color::from_rgb(255, 255, 255), 1060.0, 1000.0, FontAlign::Left, &text);
     }
 
     fn render_game_over(&self, game_state: &GameState) {
