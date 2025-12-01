@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Rectangle {
     pub x1: f32,
     pub y1: f32,
@@ -236,7 +236,7 @@ impl FVector2d {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Circle {
     pub center: FPoint,
     pub radius: f32
@@ -294,7 +294,7 @@ pub fn circle_rectangle_collision(circle: &Circle, rectangle: &Rectangle) -> Opt
     })
 }
 
-pub fn new_vector_after_circle_collision(circle: &Circle, circle_movement_vector: &FVector2d, collision: &Collision, other_movement_vector: &FVector2d) -> FVector2d {
+pub fn new_vector_after_circle_collision(circle_movement_vector: &FVector2d, collision: &Collision, other_movement_vector: &FVector2d) -> FVector2d {
     let normalized_normal = collision.normal.clone().normalize();
     let normal_movement_dot_product = circle_movement_vector.dot_product(&normalized_normal);
     if normal_movement_dot_product >= 0.0 {

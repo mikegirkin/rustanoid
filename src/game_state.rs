@@ -1,16 +1,16 @@
-use std::{collections::HashSet, f32::EPSILON};
+use std::{alloc::GlobalAlloc, collections::HashSet};
 
 use allegro::KeyCode;
 
 use crate::geometry::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Ball {
     pub position: Circle,
     pub movement_vector: FVector2d
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum BrickVariety {
     Standard { color: i32 },
     Steel
@@ -22,7 +22,7 @@ impl BrickVariety {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Brick {
     pub position: Rectangle,
     pub variety: BrickVariety,
@@ -58,6 +58,23 @@ impl Paddle {
             new_position
         };
         self.position.mutable_set(limited_new_position);
+    }
+}
+
+#[derive(Debug)]
+pub struct BallCollision {
+    pub ball: Ball,
+    pub brick_index: usize,
+    pub collision: Collision
+}
+
+impl BallCollision {
+    pub fn new(ball: Ball, brick_index: usize, collision: Collision) -> BallCollision {
+        BallCollision {
+            ball,
+            brick_index,
+            collision,
+        }
     }
 }
 
@@ -177,7 +194,8 @@ impl GameState {
                 (collision, self.paddle.vector.clone())
             });
             let brick_collision = self.has_ball_collided_with_bricks(&self.balls[i]).map(|collision| {
-                (collision, FVector2d::zero())
+                self.bricks.swap_remove(collision.brick_index);
+                (collision.collision, FVector2d::zero())
             });
             let wall_collision = self.has_ball_coollided_with_wall(&self.balls[i]).map(|collision| {
                 (collision, FVector2d::zero())
@@ -185,7 +203,7 @@ impl GameState {
             let collistion_opt = paddle_collision.or(brick_collision).or(wall_collision);
             match collistion_opt {
                 Some((collision, other_object_vector)) => {
-                    let new_movement_vector = new_vector_after_circle_collision(&self.balls[i].position, &self.balls[i].movement_vector, &collision, &other_object_vector);
+                    let new_movement_vector = new_vector_after_circle_collision(&self.balls[i].movement_vector, &collision, &other_object_vector);
                     self.balls[i].movement_vector = new_movement_vector;
                 },
                 None => {},
@@ -211,11 +229,14 @@ impl GameState {
         }
     }
 
-    fn has_ball_collided_with_bricks(&self, ball: &Ball) -> Option<Collision> {
-        for brick in &self.bricks {
+    fn has_ball_collided_with_bricks(&self, ball: &Ball) -> Option<BallCollision> {
+        for (index, brick) in self.bricks.iter().enumerate() {
             let collision_opt = circle_rectangle_collision(&ball.position, &brick.position);
-            if collision_opt.is_some() {
-                return collision_opt;
+            match collision_opt {
+                Some(collision) => {
+                    return Some(BallCollision::new(ball.clone(), index, collision));
+                }
+                None => {}
             }
         }
         None
